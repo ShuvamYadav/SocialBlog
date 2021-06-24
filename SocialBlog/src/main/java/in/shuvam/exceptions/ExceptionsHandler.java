@@ -24,5 +24,9 @@ public class ExceptionsHandler {
 	public ResponseEntity<String> notfound(DefaultException ex){
 		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ex.getMessage());	
 	}
+	@ExceptionHandler(LoginException.class)
+	public ResponseEntity<String> notfound(LoginException ex){
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());	
+	}
 
 }
