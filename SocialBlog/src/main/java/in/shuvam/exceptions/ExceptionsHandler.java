@@ -13,11 +13,11 @@ public class ExceptionsHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());	
 	}
 	@ExceptionHandler(UsernameTaken.class)
-	public ResponseEntity<String> notfound(UsernameTaken ex){
+	public ResponseEntity<String> found(UsernameTaken ex){
 		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ex.getMessage());	
 	}
 	@ExceptionHandler(Alreadyliked.class)
-	public ResponseEntity<String> notfound(Alreadyliked ex){
+	public ResponseEntity<String> found(Alreadyliked ex){
 		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ex.getMessage());	
 	}
 	@ExceptionHandler(DefaultException.class)
@@ -27,6 +27,10 @@ public class ExceptionsHandler {
 	@ExceptionHandler(LoginException.class)
 	public ResponseEntity<String> notfound(LoginException ex){
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());	
+	}
+	@ExceptionHandler(IdTaken.class)
+	public ResponseEntity<String> found(IdTaken ex){
+		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ex.getMessage());	
 	}
 
 }

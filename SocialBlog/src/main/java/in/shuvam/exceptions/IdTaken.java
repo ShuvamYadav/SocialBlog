@@ -1,12 +1,12 @@
 package in.shuvam.exceptions;
 
 @SuppressWarnings("serial")
-public class DefaultException extends Throwable{
+public class IdTaken extends Throwable{
 
 	@Override
 	public String getMessage() {
 		// TODO Auto-generated method stub
-		return "Username or Post_id not found.";
+		return "You have a post with the specified id";
 	}
 
 }

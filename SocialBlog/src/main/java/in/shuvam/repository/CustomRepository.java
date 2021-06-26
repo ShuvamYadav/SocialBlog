@@ -10,4 +10,5 @@ public interface CustomRepository {
 	Mono<Users> addPosts(String username, Posts post);
 	Mono<Users> removePost(String username,String postid);
 	Mono<Users> likepost(String user,String username,String postid);
+	Mono<Users> showUser(String username);
 }

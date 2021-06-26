@@ -1,6 +1,9 @@
 package in.shuvam.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import in.shuvam.entity.Posts;
 import in.shuvam.entity.RecentPosts;
 import in.shuvam.entity.Users;
+import in.shuvam.exceptions.IdTaken;
 import in.shuvam.repository.BlogRepo;
 import in.shuvam.repository.RecentPostsRepo;
 import reactor.core.publisher.Flux;
@@ -25,10 +29,21 @@ public class PostsController {
 	BlogRepo repo;
 	@Autowired
 	RecentPostsRepo RecentRepo;
+	@Autowired
+	ReactiveMongoTemplate template;
 	@PostMapping("/newpost")
 	public Mono<Users> post(@RequestBody Posts post,Authentication auth){
-		RecentRepo.insert(new RecentPosts(post.getId(),auth.getName(),post.getContent())).subscribe();
-			return repo.addPosts(auth.getName(), post);
+		return template.exists(new Query(Criteria.where("username").is(auth.getName())).addCriteria(Criteria.where("posts.id").in(post.getId())), Users.class)
+				.flatMap(e->{
+					if(e) {
+						return Mono.error(new IdTaken());
+					}
+					else {
+						RecentRepo.insert(new RecentPosts(post.getId(),auth.getName(),post.getContent())).subscribe();
+						return repo.addPosts(auth.getName(), post);
+					}
+				});
+		
 	}
 	@DeleteMapping("/posts/{postid}")
 	public Mono<Users> deletePost(Authentication auth,@PathVariable String postid){

@@ -27,10 +27,17 @@ public class CustomRepositoryImpl implements CustomRepository{
 	}
 	@Override
 	public Mono<Users> changeUsername(String username, String newUsername) {
-		Query query=new Query(Criteria.where("username").is(username));
-		Update update= new Update().set("username",newUsername);
-		return template.findAndModify(query, update,Users.class)
-				.onErrorMap(e-> new UsernameTaken());
+		return template.exists(new Query(Criteria.where("username").is(newUsername)),Users.class)
+				.flatMap(e->{
+					if(e) {
+						return Mono.error(new UsernameTaken());
+					}
+					else {
+						Query query=new Query(Criteria.where("username").is(username));
+						Update update= new Update().set("username",newUsername);
+						return template.findAndModify(query, update,Users.class);
+					}
+				});
 	}
 
 	@Override
@@ -56,7 +63,13 @@ public class CustomRepositoryImpl implements CustomRepository{
 		else{update.addToSet("posts.$.likedby",user);
 		update.inc("posts.$.likes");
 		return template.findAndModify(new Query(Criteria.where("username").is(username))
-				.addCriteria(Criteria.where("posts.id").is(postid)),update,Users.class).switchIfEmpty(Mono.error(new DefaultException()));}});
+				.addCriteria(Criteria.where("posts.id").is(postid)),update,FindAndModifyOptions.options().returnNew(true),Users.class).switchIfEmpty(Mono.error(new DefaultException()));}});
+	}
+	@Override
+	public Mono<Users> showUser(String username) {
+		Query query=new Query(Criteria.where("username").is(username));
+		query.fields().exclude("enabled","password");
+		return template.findOne(query,Users.class).switchIfEmpty(Mono.error(new UsernameNotFound()));
 	}
 	
 

@@ -1,5 +1,6 @@
 package in.shuvam.exceptions;
 
+@SuppressWarnings("serial")
 public class UsernameTaken extends Throwable{
 
 	@Override

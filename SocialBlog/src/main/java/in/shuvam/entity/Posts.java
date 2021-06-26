@@ -2,8 +2,6 @@ package in.shuvam.entity;
 
 import java.util.List;
 
-import org.springframework.data.annotation.Id;
-
 import com.mongodb.lang.NonNull;
 
 import lombok.AllArgsConstructor;
@@ -15,7 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor 
 @Data
 public class Posts {
-	@Id
 	@NonNull
 	private String id;
 	@NonNull

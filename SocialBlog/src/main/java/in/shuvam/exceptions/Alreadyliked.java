@@ -1,5 +1,6 @@
 package in.shuvam.exceptions;
 
+@SuppressWarnings("serial")
 public class Alreadyliked extends Throwable{
 
 	@Override

@@ -1,9 +1,6 @@
 package in.shuvam.controller;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import in.shuvam.entity.Token;
 import in.shuvam.entity.Users;
-import in.shuvam.exceptions.DefaultException;
 import in.shuvam.exceptions.LoginException;
 import in.shuvam.exceptions.UsernameNotFound;
 import in.shuvam.exceptions.UsernameTaken;
@@ -31,7 +27,6 @@ public class UsersController {
 	BlogRepo repo;
 	@Autowired
 	JwtTokenUtil util;
-	ConcurrentHashMap<String,ServerSentEvent<String>> map=new ConcurrentHashMap<>();
 	@PostMapping(value ="/signup")
 	public Mono<Users> signUp(@RequestBody Users user){
 		Mono<Users> u= Mono.just(user);
@@ -51,7 +46,7 @@ public class UsersController {
 					}
 					else
 						return Mono.error(new LoginException());
-				});
+				}).switchIfEmpty(Mono.error(new UsernameNotFound()));
 	}
 	
 	@GetMapping("/all")
@@ -64,10 +59,13 @@ public class UsersController {
 				.thenReturn("Deleted");
 	}
 	
-	@GetMapping("/getuser/{username}")
+	@GetMapping("/showprofile/{username}")
 	public Mono<Users> getUser(@PathVariable String username){
-		return repo.findByUsername(username)
-				.switchIfEmpty(Mono.error(new UsernameNotFound()));
+		return repo.showUser(username);
+	}
+	@GetMapping("/profile")
+	public Mono<Users> getprofile(Authentication auth){
+		return repo.findByUsername(auth.getName());
 	}
 
 }
