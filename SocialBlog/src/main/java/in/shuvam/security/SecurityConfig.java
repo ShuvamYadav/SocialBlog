@@ -32,7 +32,7 @@ public class SecurityConfig {
 				})).and()
 				.csrf().disable()
 				.authorizeExchange()
-				.pathMatchers("/signup","/login/**").permitAll()
+				.pathMatchers("/signup","/login").permitAll()
 				.anyExchange().authenticated()
 				.and()
 				.authenticationManager(manager)

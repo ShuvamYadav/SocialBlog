@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import in.shuvam.entity.Login;
 import in.shuvam.entity.Token;
 import in.shuvam.entity.Users;
 import in.shuvam.exceptions.LoginException;
@@ -37,11 +38,11 @@ public class UsersController {
 				.onErrorMap(err-> new UsernameTaken());
 				
 	}
-	@GetMapping("/login/{username}/{password}")
-	public Mono<Token> login(@PathVariable String username,@PathVariable String password){
-		return repo.findByUsername(username)
+	@GetMapping("/login")
+	public Mono<Token> login(@RequestBody Login login){
+		return repo.findByUsername(login.getUsername())
 				.flatMap(user->{
-					if(new BCryptPasswordEncoder().matches(password,user.getPassword())) {
+					if(new BCryptPasswordEncoder().matches(login.getPassword(),user.getPassword())) {
 						return Mono.just(new Token(util.generateToken(user)));
 					}
 					else
